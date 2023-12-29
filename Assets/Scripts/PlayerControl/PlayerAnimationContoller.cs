@@ -8,7 +8,7 @@ public class PlayerAnimationContoller : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -16,5 +16,10 @@ public class PlayerAnimationContoller : MonoBehaviour
     {
         set => animator.SetFloat("MoveMentSpeed", value);
         get => animator.GetFloat("MoveMentSpeed");
+    }
+
+    public void Play(string stateName, int layer, float normalixedTime)
+    {
+        animator.Play(stateName, layer, normalixedTime);
     }
 }

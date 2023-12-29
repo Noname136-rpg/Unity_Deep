@@ -7,12 +7,22 @@ public class PlayerController : MonoBehaviour
     [Header("input KeyCodes")]
     [SerializeField]
     private KeyCode keyCodeRun = KeyCode.LeftShift;
+    [SerializeField]
+    private KeyCode keyCodeJump = KeyCode.Space;
+
+    [Header("Audio Clips")]
+    [SerializeField]
+    private AudioClip audioClipWalk;
+    [SerializeField]
+    private AudioClip audioClipRun;
 
 
     private MouseController MousController;
     private MoveMentController MoveController;
     private PlayerStatus Pstatus;
     private PlayerAnimationContoller Panimator;
+    private AudioSource PaudioSource;
+    private FireRifle Rifle;
 
     private void Awake()
     {
@@ -23,12 +33,16 @@ public class PlayerController : MonoBehaviour
         MoveController = GetComponent<MoveMentController>();
         Pstatus = GetComponent<PlayerStatus>();
         Panimator = GetComponent<PlayerAnimationContoller>();
+        PaudioSource = GetComponent<AudioSource>();
+        Rifle = GetComponentInChildren<FireRifle>();
     }
 
     private void Update()
     {
         UpdateRotate();
         UpdateMove();
+        UpdateJump();
+        UpdateRifleAction();
     }
 
     private void UpdateRotate()
@@ -54,13 +68,44 @@ public class PlayerController : MonoBehaviour
 
             MoveController.MoveSpeed = isRun ? Pstatus.RunSpeed : Pstatus.WalkSpeed;
             Panimator.MoveSpeed = isRun ? 1 : 0.5f;
+            PaudioSource.clip = isRun ? audioClipRun : audioClipWalk;
+
+            if(PaudioSource.isPlaying == false) 
+            {
+                PaudioSource.loop = true;
+                PaudioSource.Play();
+            }
         }
         else
         {
             MoveController.MoveSpeed = 0;
             Panimator.MoveSpeed = 0;
+
+            if (PaudioSource.isPlaying == true)
+            {
+                PaudioSource.Stop();
+            }
         }
 
         MoveController.MoveTo(new Vector3(x, 0, z));
+    }
+    private void UpdateJump()
+    {
+        if(Input.GetKeyDown(keyCodeJump))
+        {
+            MoveController.Jump();
+        }
+    }
+
+    private void UpdateRifleAction()
+    {
+        if(Input.GetMouseButtonDown(0)) 
+        {
+            Rifle.StartWeaponAction();
+        }
+        else if(Input.GetMouseButtonUp(0))
+        {
+            Rifle.StopWeaponAction();
+        }
     }
 }
